@@ -1,0 +1,37 @@
+prefix: '&8[&cSumo&8] » '
+countdown: 60
+alert-times:
+- '60'
+- '30'
+- '15'
+winner-commands:
+- eco give {player} 5000
+minplayers: 15
+messages:
+  reload: '&aA konfiguráció sikeresen újra lett töltve! :)'
+  ad: ' &fSumo event indul! Játékosok: &a{count}&f/&a50 &6&l[Csatlakozás]'
+  hover: '&fKlikk a csatlakozáshoz!'
+  none-lobby: '&6A lobby még nem lett beállítva! Állíts be egyet /sumo setlobby'
+  none-spawn: '&cMég nem lett beállítva spawn!'
+  none-loc1: '&6Nem lett beállítva az első spawnpoint!'
+  none-loc2: '&6Nem lett beállítva az második spawnpoint!'
+  player-join: '&aCsatlakoztál az event-hez! &f(&a{count}&f/&a50&f)'
+  player-leave: '&cKiléptél az event-ről!'
+  join: '&a{player} &fcsatlakozott az event-hez! &f(&a{count}&f/&a50&f)'
+  leave: '&c{player} &felhagyta az event-et! &f(&a{count}&f/&a50&f)'
+  already-joined: '&cMár csatlakoztál az eventhez! A játék elhagyásához: &4/sumo leave'
+  noperm: '&4Nincs jogod ehhez!'
+  location-set1: '&a1. Spawn point elhelyezve'
+  location-set2: '&a2. Spawn point elhelyezve'
+  lobby-set: '&aLobby elhelyezve!'
+  spawn-set: '&aSpawn elhelyezve!'
+  y-set: '&aY érték beállítva'
+  y-null: 'Az Y értéke nem lehet semmi'
+  minplayers: '&cHiba! Nincs elég játékos! &fJátékosok: &a{count}&f/&a{minplayers}'
+  already-started: '&cAz event már elindult!'
+  match-winner: '&aGratulálunk, nyertél!'
+  round-looser: '&cSajnos kiestél, sok szerencsét legközelebbre!'
+  counter: '&6Hátralévő idő: &e{time} &6másodperc'
+  arena-started: '&6Az event kezdetét vette!'
+  match-end: '&aNyertes: &6&l{player}'
+  arena-already-started: '&cHiba! Az event már el lett indítva!'
