@@ -28,6 +28,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable() {
 		counter = new Rounder(this);
 		this.getServer().getPluginManager().registerEvents(counter, this);
+		getCommand("sumo").setTabCompleter(new SumoTabComplete(this));
 		this.reloadConfig();
 		this.saveDefaultConfig();
 		this.locations = new locationManager(this);
@@ -96,7 +97,7 @@ public class Main extends JavaPlugin implements Listener {
 				} else if (args[0].equalsIgnoreCase("help")) {
 					player.sendMessage(ChatColor.translateAlternateColorCodes('&',
 							"&4&m▬▬▬▬▬&8&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬&4&m▬▬▬▬▬\n"
-									+ "&f /sumo &7join - &c Csatlakozás az eventhez\n &f/sumo &7leave - &CEvent elhagyása\n &f/sumo &7ad - &cHirdetés\n &f/sumo &7start - &c Event indítása\n &f/sumo &7set lobby - &cSumo lobby beállítása\n &f/sumo &7set spawn - &cSpawn beállítása\n &f/sumo &7set 1 - &cElső harcos helye\n &f/sumo &7set 2 - &cMásodik harcos helye "
+									+ "&f /sumo &7ad - &cHirdetés\n &f/sumo &7join - &c Csatlakozás az eventhez\n &f/sumo &7leave - &CEvent elhagyása\n &f/sumo &7set - &cSumo set parancsok \n &f/sumo &7start - &c Event indítása\n &f/sumo &7stop - &c Teljes leállítása"
 									+ "\n&4&m▬▬▬▬▬&8&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬&4&m▬▬▬▬▬"));
 				} else if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("l")) {
 					if (names.contains(player.getName())) {
@@ -189,7 +190,7 @@ public class Main extends JavaPlugin implements Listener {
 										+ ChatColor.translateAlternateColorCodes('&',
 												this.getConfig().getString("messages.reload")));
 					}
-				} else if (args[0].equalsIgnoreCase("start") || args[0].equalsIgnoreCase("s")) {
+				}  else if (args[0].equalsIgnoreCase("start") || args[0].equalsIgnoreCase("s")) {
 					if (sender.hasPermission("sumo.start")) {
 						if (names.size() >= this.getConfig().getInt("minplayers")) {
 							if (!(locations.getConfig().getLocation("location1") == null)) {

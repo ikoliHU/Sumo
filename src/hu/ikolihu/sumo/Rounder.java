@@ -38,7 +38,14 @@ public class Rounder implements Listener {
 
 	public boolean isIngame(CommandSender sender) {
 		return (ingame.contains(sender.getName()));
+	}
 
+	public String inGameContent() {
+		if (ingame.size() != 0) {
+			return (ingame.get(0));
+		} else {
+			return "§4Nem elérhetõ egy játékos sem";
+		}
 	}
 
 	public void nextRound() {
@@ -52,8 +59,7 @@ public class Rounder implements Listener {
 		p2.teleport(plugin.locations.getConfig().getLocation("location2"));
 
 		for (int i = 0; i < plugin.names.size(); i++) {
-			plugin.getServer().getPlayer(plugin.names.get(i)).playSound(
-					plugin.getServer().getPlayer(plugin.names.get(i)).getLocation(), Sound.BLOCK_BELL_USE, 10, 1);
+			plugin.getServer().getPlayer(plugin.names.get(i)).playSound(plugin.getServer().getPlayer(plugin.names.get(i)).getLocation(), Sound.BLOCK_BELL_USE, 10, 1);
 		}
 		freez.add(p1.getName());
 		freez.add(p2.getName());
@@ -89,7 +95,7 @@ public class Rounder implements Listener {
 			p.sendMessage(ChatColor.translateAlternateColorCodes('&',
 					plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages.match-winner")));
 			Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix")
-					+ plugin.getConfig().getString("messages.match-end").replace("{player}", p.getName())));
+					+ plugin.getConfig().getString("messages.winner").replace("{player}", p.getName())));
 			p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 10, 1);
 			fireWork();
 			plugin.names.clear();
@@ -122,6 +128,36 @@ public class Rounder implements Listener {
 								world.getPlayers().get(0).teleport(plugin.locations.getConfig().getLocation("spawn"));
 								if (world.getPlayers().size() == 0) {
 									Bukkit.getScheduler().cancelTask(leaver);
+								}
+								return;
+							}
+						}
+
+					}
+				}, 0, 10);
+			}
+
+		}, 160);
+	}
+
+	public void onStop() {
+
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			@Override
+			public void run() {
+				leaver = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+					@Override
+					public void run() {
+
+						World world = plugin.locations.getConfig().getLocation("lobby").getWorld();
+						if (world != null) {
+							if (world.getPlayers().size() > 0) {
+								world.getPlayers().get(0).teleport(plugin.locations.getConfig().getLocation("spawn"));
+								if (world.getPlayers().size() == 0) {
+									Bukkit.getScheduler().cancelTask(leaver);
+									Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',
+											plugin.getConfig().getString("prefix")
+													+ plugin.getConfig().getString("messages.stop")));
 								}
 								return;
 							}
@@ -203,12 +239,7 @@ public class Rounder implements Listener {
 	}
 
 	public void leavePlayer(Player player) {
-
 		if (plugin.names.contains(player.getName())) {
-			freez.remove(player.getName());
-			plugin.names.remove(player.getName());
-			ingame.remove(player.getName());
-			player.teleport(plugin.locations.getConfig().getLocation("spawn"));
 			for (int i = 0; i < plugin.names.size(); i++) {
 				plugin.getServer().getPlayer(plugin.names.get(i))
 						.sendMessage(ChatColor.translateAlternateColorCodes('&',
@@ -217,33 +248,24 @@ public class Rounder implements Listener {
 										.replace("{minplayers}", plugin.getConfig().getString("minplayers"))
 										.replace("{count}", String.valueOf(plugin.names.size()))));
 			}
-		} else if (freez.contains(player.getName()))
-			freez.remove(player.getName());
-		plugin.names.remove(player.getName());
-		ingame.remove(player.getName());
-		player.teleport(plugin.locations.getConfig().getLocation("spawn"));
-		for (int i = 0; i < freez.size(); i++) {
-			plugin.getServer().getPlayer(freez.get(i))
-					.sendMessage(ChatColor.translateAlternateColorCodes('&',
-							plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages.leave")
-									.replace("{player}", player.getName())
-									.replace("{count}", String.valueOf(plugin.names.size()))));
+			plugin.names.remove(player.getName());
 		}
 		if (ingame.contains(player.getName())) {
+			Bukkit.getScheduler().cancelTask(cd);
 			ingame.remove(player.getName());
 			freez.remove(player.getName());
-			plugin.names.remove(player.getName());
+			player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
 			if (!ingame.isEmpty()) {
 				Player p = plugin.getServer().getPlayer(ingame.get(0));
 				if (p != null) {
 					p.teleport(plugin.locations.getConfig().getLocation("lobby"));
 					p.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
+					ingame.remove(p.getName());
+					freez.remove(p.getName());
 				}
 			}
-			ingame.remove(player.getName());
-			checkWinner();
+			nextRound();
 		}
-		player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
 	}
 
 	@EventHandler
