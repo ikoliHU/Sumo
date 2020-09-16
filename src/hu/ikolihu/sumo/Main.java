@@ -97,7 +97,7 @@ public class Main extends JavaPlugin implements Listener {
 				} else if (args[0].equalsIgnoreCase("help")) {
 					player.sendMessage(ChatColor.translateAlternateColorCodes('&',
 							"&4&m▬▬▬▬▬&8&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬&4&m▬▬▬▬▬\n"
-									+ "&f /sumo &7ad - &cHirdetés\n &f/sumo &7join - &c Csatlakozás az eventhez\n &f/sumo &7leave - &CEvent elhagyása\n &f/sumo &7set - &cSumo set parancsok \n &f/sumo &7start - &c Event indítása\n &f/sumo &7stop - &c Teljes leállítása"
+									+ "&f /sumo &7ad - &cHirdetés\n &f/sumo &7join - &c Csatlakozás az eventhez\n &f/sumo &7leave - &CEvent elhagyása\n &f/sumo &7set - &cSumo set parancsok \n &f/sumo &7start - &c Event indítása"
 									+ "\n&4&m▬▬▬▬▬&8&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬&4&m▬▬▬▬▬"));
 				} else if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("l")) {
 					if (names.contains(player.getName())) {
