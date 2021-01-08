@@ -190,7 +190,7 @@ public class Main extends JavaPlugin implements Listener {
 										+ ChatColor.translateAlternateColorCodes('&',
 												this.getConfig().getString("messages.reload")));
 					}
-				}  else if (args[0].equalsIgnoreCase("start") || args[0].equalsIgnoreCase("s")) {
+				} else if (args[0].equalsIgnoreCase("start") || args[0].equalsIgnoreCase("s")) {
 					if (sender.hasPermission("sumo.start")) {
 						if (names.size() >= this.getConfig().getInt("minplayers")) {
 							if (!(locations.getConfig().getLocation("location1") == null)) {

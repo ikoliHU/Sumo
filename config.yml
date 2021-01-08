@@ -8,8 +8,6 @@ alert-times:
 winner-commands:
 - eco give {player} 5000
 minplayers: 15
-enabled-worlds: 
-- 'Event4'
 messages:
   ad: '&fSumo event indul! Játékosok: &a{count}&f/&a50 &6&l[Csatlakozás]'
   already-joined: '&cMár csatlakoztál az eventhez! A játék elhagyásához: &4/sumo leave'

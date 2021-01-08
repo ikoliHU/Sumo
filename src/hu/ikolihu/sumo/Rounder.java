@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.GameMode;
 import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.Sound;
@@ -49,6 +50,9 @@ public class Rounder implements Listener {
 	}
 
 	public void nextRound() {
+		if (next + 1 >= plugin.names.size()) {
+			next = 0;
+		}
 		Player p1 = plugin.getServer().getPlayer(plugin.names.get(next));
 		Player p2 = plugin.getServer().getPlayer(plugin.names.get(next + 1));
 
@@ -57,9 +61,18 @@ public class Rounder implements Listener {
 
 		p1.teleport(plugin.locations.getConfig().getLocation("location1"));
 		p2.teleport(plugin.locations.getConfig().getLocation("location2"));
-
+		p1.setHealth(20);
+		p1.setFoodLevel(20);
+		p1.setGameMode(GameMode.ADVENTURE);
+		p1.setFlying(false);
+		p2.setHealth(20);
+		p2.setFoodLevel(20);
+		p2.setGameMode(GameMode.ADVENTURE);
+		p2.setFlying(false);
+		
 		for (int i = 0; i < plugin.names.size(); i++) {
-			plugin.getServer().getPlayer(plugin.names.get(i)).playSound(plugin.getServer().getPlayer(plugin.names.get(i)).getLocation(), Sound.BLOCK_BELL_USE, 10, 1);
+			plugin.getServer().getPlayer(plugin.names.get(i)).playSound(
+					plugin.getServer().getPlayer(plugin.names.get(i)).getLocation(), Sound.BLOCK_BELL_USE, 10, 1);
 		}
 		freez.add(p1.getName());
 		freez.add(p2.getName());
@@ -104,10 +117,6 @@ public class Rounder implements Listener {
 			playerLeaver();
 		} else {
 			next++;
-			if (next + 1 < plugin.names.size()) {
-			} else {
-				next = 0;
-			}
 			nextRound();
 
 		}
@@ -128,36 +137,6 @@ public class Rounder implements Listener {
 								world.getPlayers().get(0).teleport(plugin.locations.getConfig().getLocation("spawn"));
 								if (world.getPlayers().size() == 0) {
 									Bukkit.getScheduler().cancelTask(leaver);
-								}
-								return;
-							}
-						}
-
-					}
-				}, 0, 10);
-			}
-
-		}, 160);
-	}
-
-	public void onStop() {
-
-		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-			@Override
-			public void run() {
-				leaver = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
-					@Override
-					public void run() {
-
-						World world = plugin.locations.getConfig().getLocation("lobby").getWorld();
-						if (world != null) {
-							if (world.getPlayers().size() > 0) {
-								world.getPlayers().get(0).teleport(plugin.locations.getConfig().getLocation("spawn"));
-								if (world.getPlayers().size() == 0) {
-									Bukkit.getScheduler().cancelTask(leaver);
-									Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',
-											plugin.getConfig().getString("prefix")
-													+ plugin.getConfig().getString("messages.stop")));
 								}
 								return;
 							}
@@ -198,6 +177,7 @@ public class Rounder implements Listener {
 					event.getPlayer().sendMessage(
 							ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix")
 									+ plugin.getConfig().getString("messages.round-looser")));
+					event.getPlayer().teleport(plugin.locations.getConfig().getLocation("spawn"));
 					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 						@Override
 						public void run() {
@@ -239,33 +219,36 @@ public class Rounder implements Listener {
 	}
 
 	public void leavePlayer(Player player) {
-		if (plugin.names.contains(player.getName())) {
-			for (int i = 0; i < plugin.names.size(); i++) {
-				plugin.getServer().getPlayer(plugin.names.get(i))
-						.sendMessage(ChatColor.translateAlternateColorCodes('&',
-								plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages.leave")
-										.replace("{player}", player.getName())
-										.replace("{minplayers}", plugin.getConfig().getString("minplayers"))
-										.replace("{count}", String.valueOf(plugin.names.size()))));
-			}
-			plugin.names.remove(player.getName());
+		if (!plugin.names.contains(player.getName()))
+			return;
+		for (int i = 0; i < plugin.names.size(); i++) {
+			plugin.getServer().getPlayer(plugin.names.get(i))
+					.sendMessage(ChatColor.translateAlternateColorCodes('&',
+							plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages.leave")
+									.replace("{player}", player.getName())
+									.replace("{minplayers}", plugin.getConfig().getString("minplayers"))
+									.replace("{count}", String.valueOf(plugin.names.size()))));
 		}
-		if (ingame.contains(player.getName())) {
-			Bukkit.getScheduler().cancelTask(cd);
-			ingame.remove(player.getName());
-			freez.remove(player.getName());
-			player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
-			if (!ingame.isEmpty()) {
-				Player p = plugin.getServer().getPlayer(ingame.get(0));
-				if (p != null) {
-					p.teleport(plugin.locations.getConfig().getLocation("lobby"));
-					p.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
-					ingame.remove(p.getName());
-					freez.remove(p.getName());
-				}
+		plugin.names.remove(player.getName());
+		player.teleport(plugin.locations.getConfig().getLocation("spawn"));
+
+		if (!ingame.contains(player.getName()))
+			return;
+		Bukkit.getScheduler().cancelTask(cd);
+		ingame.remove(player.getName());
+		freez.remove(player.getName());
+		player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
+		if (!ingame.isEmpty()) {
+			Player p = plugin.getServer().getPlayer(ingame.get(0));
+			if (p != null) {
+				ingame.remove(p.getName());
+				freez.remove(p.getName());
+				p.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
+				p.teleport(plugin.locations.getConfig().getLocation("lobby"));
 			}
-			nextRound();
 		}
+		nextRound();
+
 	}
 
 	@EventHandler
